@@ -20,17 +20,45 @@ from datetime import datetime
 import pandas as pd
 
 # ─── Configure HuggingFace / Torch cache before importing docling ─────────────
-os.environ["HF_HOME"]                    = r"D:\cache\huggingface"
-os.environ["TRANSFORMERS_CACHE"]         = r"D:\cache\huggingface\transformers"
-os.environ["HUGGINGFACE_HUB_CACHE"]     = r"D:\cache\huggingface\hub"
-os.environ["TORCH_HOME"]                 = r"D:\cache\torch"
+# Aggressively redirect all possible caches to D drive to protect C drive
+CACHE_BASE = Path(r"D:\cache")
+os.environ["USERPROFILE"]    = str(CACHE_BASE / "user")
+os.environ["LOCALAPPDATA"]   = str(CACHE_BASE / "user" / "Local")
+os.environ["APPDATA"]        = str(CACHE_BASE / "user" / "Roaming")
+os.environ["TMP"]            = str(CACHE_BASE / "temp")
+os.environ["TEMP"]           = str(CACHE_BASE / "temp")
+
+os.environ["HF_HOME"]                    = str(CACHE_BASE / "huggingface")
+os.environ["TRANSFORMERS_CACHE"]         = str(CACHE_BASE / "huggingface" / "transformers")
+os.environ["HUGGINGFACE_HUB_CACHE"]     = str(CACHE_BASE / "huggingface" / "hub")
+os.environ["TORCH_HOME"]                 = str(CACHE_BASE / "torch")
+os.environ["TORCH_EXTENSIONS_DIR"]       = str(CACHE_BASE / "torch_extensions")
+os.environ["NLTK_DATA"]                 = str(CACHE_BASE / "nltk_data")
+
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 os.environ["HF_HUB_DISABLE_SYMLINKS"]   = "1"
 
-from docling.document_converter import DocumentConverter
+# Ensure all cache directories exist
+for p in [
+    CACHE_BASE / "huggingface", 
+    CACHE_BASE / "torch", 
+    CACHE_BASE / "temp", 
+    CACHE_BASE / "user" / "Local", 
+    CACHE_BASE / "user" / "Roaming",
+    CACHE_BASE / "torch_extensions",
+    CACHE_BASE / "nltk_data"
+]:
+    p.mkdir(parents=True, exist_ok=True)
+
+
+import fitz  # PyMuPDF - for counting pages before converting
+from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.datamodel.document import InputFormat
+from docling.datamodel.accelerator_options import AcceleratorOptions, AcceleratorDevice
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-BASE_DIR     = Path(r"D:\UFO files")
+BASE_DIR     = Path(r"D:\Project\UFO_BOT\UFO-BOT")
 EXCEL_PATH   = BASE_DIR / "Data_files" / "UFO.xlsx"
 PDF_DIR      = BASE_DIR / "Pdf_files"
 OUTPUT_DIR   = BASE_DIR / "output" / "pdf_markdown"
@@ -90,10 +118,37 @@ def build_metadata(row: pd.Series) -> dict:
     }
 
 
+PAGE_CHUNK_SIZE = 10  # Keep small: docling-parse C++ accumulates memory per page within a single convert() call
+
+
 def convert_pdf_to_markdown(pdf_path: Path, converter: DocumentConverter) -> str:
-    """Convert a single PDF file to Markdown string using docling."""
-    result = converter.convert(str(pdf_path))
-    return result.document.export_to_markdown()
+    """
+    Convert a single PDF to Markdown, processing in chunks of PAGE_CHUNK_SIZE pages.
+    This avoids the std::bad_alloc bug in docling-parse's C++ backend which leaks
+    memory across pages and crashes on large documents.
+    """
+    # Count total pages using PyMuPDF (fast, no full parse)
+    with fitz.open(str(pdf_path)) as doc:
+        total_pages = len(doc)
+
+    log.info(f"    PDF has {total_pages} pages — processing in chunks of {PAGE_CHUNK_SIZE}")
+
+    markdown_parts = []
+    for start in range(1, total_pages + 1, PAGE_CHUNK_SIZE):
+        end = min(start + PAGE_CHUNK_SIZE - 1, total_pages)
+        log.info(f"    -> Chunk pages {start}–{end} ...")
+        try:
+            result = converter.convert(str(pdf_path), page_range=(start, end))
+            markdown_parts.append(result.document.export_to_markdown())
+            # CRITICAL: unload C++ backend to free memory after each chunk
+            try:
+                result.input._backend.unload()
+            except Exception:
+                pass
+        except Exception as e:
+            log.warning(f"    -> Chunk {start}–{end} failed: {e}. Skipping chunk.")
+
+    return "\n\n".join(markdown_parts)
 
 
 def save_markdown(name_file: str, markdown: str, metadata: dict) -> Path:
@@ -155,7 +210,33 @@ def run_pipeline():
 
     # ── Initialize docling converter ────────────────────────────────────────
     log.info("\n[INIT] Initializing docling DocumentConverter...")
-    converter = DocumentConverter()
+    pipeline_options = PdfPipelineOptions()
+
+    # Use GPU accelerator
+    pipeline_options.accelerator_options = AcceleratorOptions(device=AcceleratorDevice.CUDA)
+
+    # Limit OCR batch size
+    pipeline_options.ocr_batch_size = 1
+
+    # CRITICAL: force_backend_text skips C++ image rendering for text-based PDF pages,
+    # which is the root cause of the std::bad_alloc preprocess crash
+    pipeline_options.force_backend_text       = True
+
+    # Disable all heavy enrichment features to minimize memory usage
+    pipeline_options.generate_page_images     = False
+    pipeline_options.generate_picture_images  = False
+    pipeline_options.generate_table_images    = False
+    pipeline_options.do_picture_classification = False
+    pipeline_options.do_picture_description   = False
+    pipeline_options.do_formula_enrichment    = False
+    pipeline_options.do_code_enrichment       = False
+    pipeline_options.images_scale             = 1.0
+
+    converter = DocumentConverter(
+        format_options={
+            InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+        }
+    )
     log.info("Docling ready.")
 
     # ── Process each PDF ────────────────────────────────────────────────────

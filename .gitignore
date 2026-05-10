@@ -157,8 +157,9 @@ Data_files/
 Img_file/
 Media_files/
 Pdf_files/
-output/
+# output/
 *.log
 *.csv
 *.xlsx
 *.pdf
+LightRAG/

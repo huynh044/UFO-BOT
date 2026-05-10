@@ -24,7 +24,7 @@ from datetime import datetime
 import pandas as pd
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
-BASE_DIR      = Path(r"D:\UFO files")
+BASE_DIR     = Path(r"D:\Project\UFO_BOT\UFO-BOT")
 EXCEL_PATH    = BASE_DIR / "Data_files" / "UFO.xlsx"
 OUTPUT_DIR    = BASE_DIR / "output" / "media_markdown"
 MANIFEST_PATH = BASE_DIR / "output" / "media_manifest.json"

@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 import pandas as pd
 
-BASE_DIR   = Path(r"D:\UFO files")
+BASE_DIR   = Path(r"D:\Project\UFO_BOT\UFO-BOT")
 EXCEL_PATH = BASE_DIR / "Data_files" / "UFO.xlsx"
 PDF_DIR    = BASE_DIR / "Pdf_files"
 
