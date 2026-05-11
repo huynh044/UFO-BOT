@@ -154,7 +154,7 @@ cython_debug/
 
 # Project Specific Data & Output
 Data_files/
-Img_file/
+Img_files/
 Media_files/
 Pdf_files/
 # output/

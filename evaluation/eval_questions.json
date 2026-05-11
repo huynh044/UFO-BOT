@@ -1,0 +1,72 @@
+[
+  {
+    "id": "Q001",
+    "category": "Incident Identification",
+    "question": "What is the GIMBAL UFO video and which agency released it?",
+    "reference_answer": "The GIMBAL video is a declassified infrared footage of an unidentified aerial phenomenon captured by U.S. Navy pilots. It was released by the Department of Defense (DoD) and shows a rotating object moving against the wind.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q002",
+    "category": "Historical Events",
+    "question": "What happened during the 1947 Roswell incident?",
+    "reference_answer": "In 1947, an unidentified object crashed on a ranch near Roswell, New Mexico. The U.S. Army Air Force initially stated they had recovered a flying disc before retracting the statement, claiming it was a weather balloon. The incident remains one of the most famous UFO cases.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "Q003",
+    "category": "Government Programs",
+    "question": "What was Project Blue Book and what were its conclusions?",
+    "reference_answer": "Project Blue Book was a U.S. Air Force program that systematically studied UFO reports from 1952 to 1969. It investigated over 12,000 UFO sightings. The program concluded that most UFOs were misidentified natural phenomena or conventional aircraft, and found no evidence of extraterrestrial vehicles.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "Q004",
+    "category": "UAP Characteristics",
+    "question": "What are the five observable characteristics that define UAP behavior according to U.S. Navy reports?",
+    "reference_answer": "The five observables described in UAP reports are: instantaneous acceleration, hypersonic velocities without signatures, low observability, trans-medium travel (moving through air and water), and positive lift without visible means of propulsion.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q005",
+    "category": "Congressional Activity",
+    "question": "What did the UAP Task Force report to Congress reveal?",
+    "reference_answer": "The UAP Task Force report to Congress in 2021 documented 144 UAP reports from government sources, confirmed that some objects demonstrated unusual flight characteristics, and could not explain most of the encounters. It highlighted potential national security concerns.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "Q006",
+    "category": "Witness Testimony",
+    "question": "What did Navy pilots report about the Tic Tac UAP encounter in 2004?",
+    "reference_answer": "During the 2004 USS Nimitz encounter, Navy pilots including Commander David Fravor reported a white, oblong object resembling a Tic Tac candy, approximately 40 feet long, with no visible wings or exhaust. The object performed impossible maneuvers and descended from 80,000 feet in seconds.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "Q007",
+    "category": "Agency Involvement",
+    "question": "What role did NASA play in UAP investigation?",
+    "reference_answer": "NASA established an independent study team to examine UAP from a scientific perspective. The team published a report recommending that NASA use its expertise in data collection and analysis to help study UAPs and calling for systematic scientific approaches to the phenomenon.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "Q008",
+    "category": "International Cases",
+    "question": "What significant UFO event occurred near military installations in Belgium in 1989-1990?",
+    "reference_answer": "The Belgian UFO wave involved large triangular craft spotted over Belgium, pursued by F-16 fighter jets in March 1990. Radar tracked objects performing impossible maneuvers. The Belgian Air Force officially acknowledged the phenomenon but could not identify the objects.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q009",
+    "category": "Physical Evidence",
+    "question": "What types of physical evidence have been collected from UFO incidents?",
+    "reference_answer": "Physical evidence from UFO incidents includes radar data showing anomalous tracks, infrared sensor footage, soil samples showing radiation or heat effects, recovered metallic debris with unusual isotopic ratios, and physiological effects on witnesses such as burns or eye damage.",
+    "difficulty": "hard"
+  },
+  {
+    "id": "Q010",
+    "category": "Recent Developments",
+    "question": "What is the All-domain Anomaly Resolution Office (AARO) and what is its mission?",
+    "reference_answer": "AARO is a U.S. Department of Defense office established in 2022 to serve as the focal point for UAP detection, identification, and attribution. Its mission is to minimize technical and intelligence surprise by coordinating all UAP-related data collection across military branches.",
+    "difficulty": "medium"
+  }
+]
